@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 1f2e19ff4a45bf8d8105a534828b900492b2c3ed
+    changeNotes: Update icon.
   - sha: cfb1fdf51e3ae6a9cf23e7123dab11a186a4e4f1
     changeNotes: Allow clear stored parameters.
   - sha: 8ae58bbfefd124c2bae2d4982df39e66f7b98e14
