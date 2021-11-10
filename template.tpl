@@ -129,6 +129,32 @@ ___TEMPLATE_PARAMETERS___
     ]
   },
   {
+    "type": "CHECKBOX",
+    "name": "clearCookies",
+    "checkboxText": "Clear stored parameters on conversion",
+    "simpleValueType": true,
+    "enablingConditions": [
+      {
+        "paramName": "type",
+        "paramValue": "conversion",
+        "type": "EQUALS"
+      }
+    ]
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "insideArray",
+    "checkboxText": "Put request object inside the array.",
+    "simpleValueType": true,
+    "enablingConditions": [
+      {
+        "paramName": "requestMethod",
+        "paramValue": "POST",
+        "type": "EQUALS"
+      }
+    ]
+  },
+  {
     "type": "GROUP",
     "name": "urlParametersGroup",
     "displayName": "Url parameters to store",
@@ -212,19 +238,6 @@ ___TEMPLATE_PARAMETERS___
     ]
   },
   {
-    "type": "CHECKBOX",
-    "name": "insideArray",
-    "checkboxText": "Put request object inside the array.",
-    "simpleValueType": true,
-    "enablingConditions": [
-      {
-        "paramName": "requestMethod",
-        "paramValue": "POST",
-        "type": "EQUALS"
-      }
-    ]
-  },
-  {
     "type": "GROUP",
     "name": "bodyDataGroup",
     "displayName": "JSON Request Body",
@@ -272,6 +285,39 @@ ___TEMPLATE_PARAMETERS___
         "type": "EQUALS"
       }
     ]
+  },
+  {
+    "type": "GROUP",
+    "name": "cookiesGroup",
+    "displayName": "Stored parameters to clear",
+    "groupStyle": "ZIPPY_OPEN",
+    "subParams": [
+      {
+        "type": "SIMPLE_TABLE",
+        "name": "cookiesToClear",
+        "simpleTableColumns": [
+          {
+            "defaultValue": "",
+            "displayName": "Name",
+            "name": "name",
+            "type": "TEXT",
+            "valueValidators": [
+              {
+                "type": "NON_EMPTY"
+              }
+            ],
+            "isUnique": true
+          }
+        ]
+      }
+    ],
+    "enablingConditions": [
+      {
+        "paramName": "clearCookies",
+        "paramValue": true,
+        "type": "EQUALS"
+      }
+    ]
   }
 ]
 
@@ -314,6 +360,18 @@ if (data.type === 'page_view') {
     let url = data.url;
     let postBodyData = '';
     let requestHeaders;
+
+    if (data.clearCookies && data.cookiesToClear) {
+        for (let key in data.cookiesToClear) {
+            setCookie('affiliate_' + data.cookiesToClear[key].name, '', {
+                domain: 'auto',
+                path: '/',
+                secure: true,
+                httpOnly: false,
+                'max-age': 10
+            }, false);
+        }
+    }
 
     if (data.requestMethod === 'GET') {
         let urlParams = '';

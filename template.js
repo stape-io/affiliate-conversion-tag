@@ -35,6 +35,18 @@ if (data.type === 'page_view') {
     let postBodyData = '';
     let requestHeaders;
 
+    if (data.clearCookies && data.cookiesToClear) {
+        for (let key in data.cookiesToClear) {
+            setCookie('affiliate_' + data.cookiesToClear[key].name, '', {
+                domain: 'auto',
+                path: '/',
+                secure: true,
+                httpOnly: false,
+                'max-age': 10
+            }, false);
+        }
+    }
+
     if (data.requestMethod === 'GET') {
         let urlParams = '';
         requestHeaders = {method: 'GET'};
