@@ -1,5 +1,7 @@
 homepage: "https://stape.io/"
 versions:
+  - sha: 3041c6a4e0c7883c1763ef1e6df6c180de74ba30
+    changeNotes: Fix issue with setting some cookies.
   - sha: 1f2e19ff4a45bf8d8105a534828b900492b2c3ed
     changeNotes: Update icon.
   - sha: cfb1fdf51e3ae6a9cf23e7123dab11a186a4e4f1
