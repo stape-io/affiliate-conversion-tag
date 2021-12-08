@@ -492,7 +492,7 @@ ___SERVER_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "affiliate_*"
+                    "string": "*"
                   },
                   {
                     "type": 1,
