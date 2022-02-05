@@ -5,6 +5,14 @@ const JSON = require('JSON');
 const setCookie = require('setCookie');
 const parseUrl = require('parseUrl');
 const encodeUriComponent = require('encodeUriComponent');
+const getRequestHeader = require('getRequestHeader');
+
+const logToConsole = require('logToConsole');
+const getContainerVersion = require('getContainerVersion');
+const containerVersion = getContainerVersion();
+const isDebug = containerVersion.debugMode;
+const isLoggingEnabled = determinateIsLoggingEnabled();
+const traceId = getRequestHeader('trace-id');
 
 
 if (data.type === 'page_view') {
@@ -67,7 +75,31 @@ if (data.type === 'page_view') {
         }
     }
 
+    if (isLoggingEnabled) {
+        logToConsole(JSON.stringify({
+            'Name': 'Affiliate',
+            'Type': 'Request',
+            'TraceId': traceId,
+            'EventName': 'Conversion',
+            'RequestMethod': data.requestMethod,
+            'RequestUrl': url,
+            'RequestBody': postBodyData,
+        }));
+    }
+
     sendHttpRequest(url, (statusCode, headers, body) => {
+        if (isLoggingEnabled) {
+            logToConsole(JSON.stringify({
+                'Name': 'Affiliate',
+                'Type': 'Response',
+                'TraceId': traceId,
+                'EventName': 'Conversion',
+                'ResponseStatusCode': statusCode,
+                'ResponseHeaders': headers,
+                'ResponseBody': body,
+            }));
+        }
+
         if (statusCode >= 200 && statusCode < 300) {
             data.gtmOnSuccess();
         } else {
@@ -81,3 +113,18 @@ function enc(data) {
     return encodeUriComponent(data);
 }
 
+function determinateIsLoggingEnabled() {
+    if (!data.logType) {
+        return isDebug;
+    }
+
+    if (data.logType === 'no') {
+        return false;
+    }
+
+    if (data.logType === 'debug') {
+        return isDebug;
+    }
+
+    return data.logType === 'always';
+}
