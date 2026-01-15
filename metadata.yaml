@@ -1,4 +1,5 @@
-homepage: "https://stape.io/"
+homepage: 'https://stape.io/'
+documentation: 'https://github.com/stape-io/affiliate-conversion-tag'
 versions:
   - sha: c078ef659cfce8ee4c3d9361907781c9aea7a171
     changeNotes: Update Logs handling.
