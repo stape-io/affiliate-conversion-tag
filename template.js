@@ -1,12 +1,9 @@
 ﻿const getAllEventData = require('getAllEventData');
 const getEventData = require('getEventData');
 const encodeUriComponent = require('encodeUriComponent');
-const getContainerVersion = require('getContainerVersion');
-const getRequestHeader = require('getRequestHeader');
 const getType = require('getType');
 const makeString = require('makeString');
 const JSON = require('JSON');
-const logToConsole = require('logToConsole');
 const makeTableMap = require('makeTableMap');
 const parseUrl = require('parseUrl');
 const sendHttpRequest = require('sendHttpRequest');
@@ -15,10 +12,6 @@ const setCookie = require('setCookie');
 /*==============================================================================
 ==============================================================================*/
 
-const containerVersion = getContainerVersion();
-const isDebug = containerVersion.debugMode;
-const isLoggingEnabled = determinateIsLoggingEnabled();
-const traceId = getRequestHeader('trace-id');
 const eventData = getAllEventData();
 
 if (!isConsentGivenOrNotRequired(data, eventData)) {
@@ -96,37 +89,9 @@ if (data.type === 'page_view') {
     }
   }
 
-  if (isLoggingEnabled) {
-    logToConsole(
-      JSON.stringify({
-        Name: 'Affiliate',
-        Type: 'Request',
-        TraceId: traceId,
-        EventName: 'Conversion',
-        RequestMethod: data.requestMethod,
-        RequestUrl: url,
-        RequestBody: postBodyData
-      })
-    );
-  }
-
   sendHttpRequest(
     url,
     (statusCode, headers, body) => {
-      if (isLoggingEnabled) {
-        logToConsole(
-          JSON.stringify({
-            Name: 'Affiliate',
-            Type: 'Response',
-            TraceId: traceId,
-            EventName: 'Conversion',
-            ResponseStatusCode: statusCode,
-            ResponseHeaders: headers,
-            ResponseBody: body
-          })
-        );
-      }
-
       if (statusCode >= 200 && statusCode < 300) {
         data.gtmOnSuccess();
       } else {
@@ -152,20 +117,4 @@ function isConsentGivenOrNotRequired(data, eventData) {
 function enc(data) {
   if (['null', 'undefined'].indexOf(getType(data)) !== -1) data = '';
   return encodeUriComponent(makeString(data));
-}
-
-function determinateIsLoggingEnabled() {
-  if (!data.logType) {
-    return isDebug;
-  }
-
-  if (data.logType === 'no') {
-    return false;
-  }
-
-  if (data.logType === 'debug') {
-    return isDebug;
-  }
-
-  return data.logType === 'always';
 }
